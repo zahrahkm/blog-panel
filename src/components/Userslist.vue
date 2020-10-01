@@ -24,7 +24,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-striped">
+                    <table class="table table-bordered table-hover table-striped" v-if="!loading">
                         <thead>
                         <tr>
                             <th>شناسه</th>
@@ -42,14 +42,17 @@
                             <td>فعال</td>
                             <td>
                                 <div class="op-icon">
-                                    <a href=""><i class="fa fa-edit"></i></a>
-                                    <a href=""><i class="fa fa-remove"></i></a>
+                                    <router-link :to="{name:'updateUser',params:{userid:user.id}}"><i class="fa fa-edit"></i></router-link>
+                                    <a href=""><i class="fa fa-remove" @click.prevent="removeUser(user)"></i></a>
                                     <a href=""><i class="fa fa-folder-open"></i></a>
                                 </div>
                             </td>
                         </tr>
                         </tbody>
                     </table>
+                    <div v-else >
+                        <pulse-loader :loading="loading" ></pulse-loader>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,16 +61,21 @@
 </template>
 <script>
     import axios from "axios";
+    import notification from "@/Services/Notification/notification";
+    import PulseLoader from "vue-spinner/src/PulseLoader";
 
     export default {
         name:'Userslist',
+        components:{ PulseLoader},
         data(){
             return{
-                users:[]
+                users:[],
+                loading:false
             }
         },
         methods: {
             getUsers() {
+                this.loading=true;
                 axios
                     .get(`https://mypanel-b0573.firebaseio.com/users.json`)
                     .then((response) => {
@@ -81,8 +89,21 @@
                             this.users = allUsers;
                         }
                     })
-                    .catch((error) => console.log(error.response));
+                    .catch((error) => console.log(error.response))
+                    .then(() => {
+                        this.loading = false;})
             },
+            removeUser(user) {
+                axios
+                    .delete(`https://mypanel-b0573.firebaseio.com/users/${user.id}.json`)
+                    .then((response) => {
+                        this.getUsers()
+                        response.status=notification.success('کاربر با موفقیت حذف گردید')
+                    })
+
+                    .catch((error) => console.log(error.response))
+
+            }
 
 
         },

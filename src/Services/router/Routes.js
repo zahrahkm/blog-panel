@@ -26,6 +26,7 @@ export default [{
         {path:'updateCategory/:id',name:'updateCategory',component:AddCategory },
         {path:'userslist',name:'Userslist',component:Userslist },
         {path:'SignUp',name:'SignUp',component:Signup },
+        {path:'/SignUp/:userid',name:'updateUser',component:Signup},
         {path:'Login',name:'Login',component:Login },
     ]
 }]

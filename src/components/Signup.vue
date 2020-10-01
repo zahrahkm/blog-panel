@@ -1,6 +1,6 @@
 <template>
     <div class="signup-form">
-        <form action="/examples/actions/confirmation.php" method="post" class="form-horizontal">
+        <form class="form-horizontal">
             <div class="row">
                 <div class="col-8 offset-4">
                     <h2>فرم ثبت نام</h2>
@@ -9,7 +9,10 @@
             <div class="form-group row">
                 <label class="col-form-label col-4">نام</label>
                 <div class="col-8">
-                    <input type="text" class="form-control" name="username" required="required" v-model="users.username">
+                    <input type="text" class="form-control" name="username" required="required" v-model="users.username" @blur="$v.users.username.$touch()">
+                    <div v-if="$v.users.username.$error">
+                        <span class="error" v-if="!$v.users.username.required">Field is required</span>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">
@@ -18,30 +21,36 @@
                     <input type="email" class="form-control" name="email" required="required" v-model="users.email" @blur="$v.users.email.$touch()">
                     <div v-if="$v.users.email.$error">
                         <span class="error" v-if="!$v.users.email.required">Field is required</span>
-                        <span class="error" v-if="!$v.users.email.email">Field is show write a valied email</span>
+                        <span class="error" v-if="!$v.users.email.email">Write a valid email</span>
                     </div>
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-form-label col-4">واژه امنیتی</label>
                 <div class="col-8">
-                    <input type="password" class="form-control" name="password" required="required" v-model.trim="$v.password.$model" @blur="$v.users.password.$touch()">
-                    <span class="error" v-if="!$v.users.password.required">Field is required</span>
-                    <span class="error" v-if="!$v.users.password.minLength">password should be more than 6 characters</span>
+                    <input type="password" class="form-control" name="password" required="required" v-model="users.password" @blur="$v.users.password.$touch()">
+                    <div v-if="$v.users.password.$error">
+                        <span class="error" v-if="!$v.users.password.required">Field is required</span>
+                        <span class="error" v-if="!$v.users.password.minLength">password should be more than 6 characters</span>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-form-label col-4"> تکرار واژه امنیتی</label>
                 <div class="col-8">
-                    <input type="password" class="form-control" name="confirm_password" required="required" v-model.trim="$v.repeatPassword.$model" @blur="$v.users.repeatPassword.$touch()">
-                    <span class="error" v-if="!$v.users.password.required">Field is required</span>
-                    <div class="error" v-if="!$v.repeatPassword.sameAsPassword">Passwords must be identical.</div>
+                    <input type="password" class="form-control" name="confirm_password" required="required" v-model="users.repeatPassword" @blur="$v.users.repeatPassword.$touch()">
+                    <div v-if="$v.users.repeatPassword.$error">
+                        <span class="error" v-if="!$v.users.repeatPassword.required">Field is required</span>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-8 offset-4">
-                    <p><label class="form-check-label"><input type="checkbox" required="required"> تمامی <a href="#">قوانین و </a> <a href="#"> شرایط </a></label> را میپذیرم.</p>
-                    <button type="submit" class="btn btn-primary btn-lg" @click="addUser">ثبت نام</button>
+                    <p><label class="form-check-label"><input type="checkbox" v-model="users.checkout" @blur="$v.users.ckeckout.$touch()"> تمامی <a href="#">قوانین و </a> <a href="#"> شرایط </a></label> را میپذیرم.</p>
+                    <button type="submit" v-if="pageStatus" class="btn btn-primary btn-lg" @click.prevent="addUser" :disabled="$v.$invalid">ثبت نام</button>
+                    <div v-else>
+                        <button  id name class="btn btn-success"  :disabled="$v.$invalid" @click.prevent="editUser(userid)">ویرایش</button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -53,7 +62,7 @@
 <script>
     import axios from "axios";
     import notification from "@/Services/Notification/notification";
-    import { required,email,sameAs,minLength } from 'vuelidate/lib/validators'
+    import { required,email,minLength } from 'vuelidate/lib/validators'
     export default {
         name: "SignUp",
         data() {
@@ -63,7 +72,9 @@
                     email: '',
                     password: '',
                     repeatPassword: ''
-                }
+                },
+                userid: this.$route.params.userid,
+                pageStatus:true
             }
         },
         validations: {
@@ -80,7 +91,7 @@
                     minLength: minLength(6)
                 },
                 repeatPassword: {
-                    sameAsPassword: sameAs('password')
+                    required
                 }
             }
         },
@@ -91,12 +102,48 @@
                     .then(response => {
                         this.$v.$touch();
                         if (!this.$v.$invalid) {
-                            response.status = notification.success('دسته با موفقیت ذخیره شد')
-                            this.users = ''
+
+                            response.status = notification.success('کاربر با موفقیت ذخیره شد')
                         }
+                        this.users = ''
                     })
                     .catch(error => console.log(error.response))
+            },
+
+        getUser() {
+            this.loading=true;
+            axios.get(`https://mypanel-b0573.firebaseio.com/users/${this.userid}.json`)
+                .then(response => {
+                    this.users=(response.data);
+                })
+                .catch((error) => console.log(error.response))
+                .then(()=>{
+                    this.loading=false
+                })
+        },
+        editUser() {
+            this.loading=true;
+            axios.put(`https://mypanel-b0573.firebaseio.com/users/${this.userid}.json`, this.users)
+                .then(response => {
+                    this.$v.$touch();
+                    if (!this.$v.$invalid) {
+                        response.status = notification.success('پست با موفقیت ذخیره شد')
+
+                    }
+                    this.users = ''
+                })
+                .catch(error => console.log(error.response = "پست ذخیره نشد!"))
+                .then(()=>{
+                    this.loading=false
+                })
+        }},
+        created() {
+            if(this.userid){
+                this.pageStatus = false;
+                this.getUser();
             }
+
+
         }
 
     }
