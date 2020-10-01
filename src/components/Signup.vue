@@ -105,7 +105,6 @@
 </script>
 <style>
     body {
-        color: #999;
         background: #f3f3f3;
         font-family: 'Roboto', sans-serif;
     }

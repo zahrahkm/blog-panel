@@ -31,16 +31,14 @@
                             <th>نام</th>
                             <th>ایمیل</th>
                             <th>نوشته ها</th>
-                            <th>تاریخ انتشار</th>
+                            <th>عملیات</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-for="(user,index) in users" :key="user.id">
                         <tr>
-                            <td>9</td>
-                            <td>اموزش ویو</td>
-                            <td>محمد نجاری</td>
-                            <td>95</td>
-                            <td>12 بهمن 1396</td>
+                            <td>{{index +1}}</td>
+                            <td>{{user.username}}</td>
+                            <td>{{user.email}}</td>
                             <td>فعال</td>
                             <td>
                                 <div class="op-icon">
@@ -59,7 +57,37 @@
     </div>
 </template>
 <script>
+    import axios from "axios";
+
     export default {
-        name:'Userslist'
+        name:'Userslist',
+        data(){
+            return{
+                users:[]
+            }
+        },
+        methods: {
+            getUsers() {
+                axios
+                    .get(`https://mypanel-b0573.firebaseio.com/users.json`)
+                    .then((response) => {
+                        return response.data;
+                    })
+                    .then((data) => {
+                        var allUsers = [];
+                        for (let key in data) {
+                            data[key].id = key;
+                            allUsers.push(data[key])
+                            this.users = allUsers;
+                        }
+                    })
+                    .catch((error) => console.log(error.response));
+            },
+
+
+        },
+        created() {
+            this.getUsers();
+        }
     }
 </script>
