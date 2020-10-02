@@ -44,7 +44,7 @@
                                 <div class="op-icon">
                                     <router-link :to="{name:'updateUser',params:{userid:user.id}}"><i class="fa fa-edit"></i></router-link>
                                     <a href=""><i class="fa fa-remove" @click.prevent="removeUser(user)"></i></a>
-                                    <a href=""><i class="fa fa-folder-open"></i></a>
+                                    <router-link :to="{name:'User',params:{userid:user.id}}"><i class="fa fa-folder-open"></i></router-link>
                                 </div>
                             </td>
                         </tr>

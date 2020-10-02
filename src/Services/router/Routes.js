@@ -8,6 +8,7 @@ import Post from "@/components/Post";
 import Userslist from "@/components/Userslist";
 import Signup from "@/components/Signup";
 import Login from "@/components/Login";
+import User from "@/components/User"
 
 
 
@@ -27,6 +28,7 @@ export default [{
         {path:'userslist',name:'Userslist',component:Userslist },
         {path:'SignUp',name:'SignUp',component:Signup },
         {path:'/SignUp/:userid',name:'updateUser',component:Signup},
+        {path: '/user',name:'User',component: User},
         {path:'Login',name:'Login',component:Login },
     ]
 }]
