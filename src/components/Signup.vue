@@ -46,7 +46,7 @@
             </div>
             <div class="form-group row">
                 <div class="col-8 offset-4">
-                    <p><label class="form-check-label"><input type="checkbox" v-model="users.checkout" @blur="$v.users.ckeckout.$touch()"> تمامی <a href="#">قوانین و </a> <a href="#"> شرایط </a></label> را میپذیرم.</p>
+                    <p><label class="form-check-label"><input type="checkbox" v-model="users.agree" @blur="$v.users.agree.$touch()"> تمامی <a href="#">قوانین و </a> <a href="#"> شرایط </a></label> را میپذیرم.</p>
                     <button type="submit" v-if="pageStatus" class="btn btn-primary btn-lg" @click.prevent="addUser" :disabled="$v.$invalid">ثبت نام</button>
                     <div v-else>
                         <button  id name class="btn btn-success"  :disabled="$v.$invalid" @click.prevent="editUser(userid)">ویرایش</button>
@@ -71,7 +71,8 @@
                     username: '',
                     email: '',
                     password: '',
-                    repeatPassword: ''
+                    repeatPassword: '',
+                    agree:false
                 },
                 userid: this.$route.params.userid,
                 pageStatus:true
@@ -136,7 +137,8 @@
                 .then(()=>{
                     this.loading=false
                 })
-        }},
+        }
+        },
         created() {
             if(this.userid){
                 this.pageStatus = false;
