@@ -115,9 +115,10 @@ export default {
             this.$v.$touch();
             if(!this.$v.$invalid){
               response.status=notification.success('دسته با موفقیت ذخیره شد')
-              this.category=''
-            }
+              this.$router.replace('Categories')
 
+            }
+            this.category=''
 
           })
 
@@ -132,11 +133,13 @@ export default {
     editCategory(){
       axios.put(`https://mypanel-b0573.firebaseio.com/category/${this.catid}.json`, this.category)
           .then(response => {
+            this.$router.replace('/Categories')
             this.$v.$touch();
             if(!this.$v.$invalid){
               response.status=notification.success('دسته با موفقیت ذخیره شد')
 
             }
+
             this.category=''
           })
           .catch(error => console.log(error.response = "دسته ذخیره نشد!"))

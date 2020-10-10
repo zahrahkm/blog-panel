@@ -14,16 +14,16 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">Vue JS | 7Learn</a>
+            <a class="navbar-brand" href="index.html">پنل مدیریت وبلاگ</a>
           </div>
           <!-- Top Menu Items -->
-          <ul class="nav navbar-right top-nav">
+          <ul class="nav navbar-right top-nav" >
 
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-users" ></i> نام مدیر <b class="caret"></b></a>
+            <li class="dropdown" v-if="loggedIn">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-users" >  </i> {{currentUser}} <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#"><i class="fa fa-fw fa-user"></i> پروفایل</a>
+                  <router-link :to="{name:'User'}"><i class="fa fa-fw fa-user"></i> پروفایل</router-link>
                 </li>
                 <li>
                   <a href="#"><i class="fa fa-fw fa-envelope"></i> صندوق ورودی</a>
@@ -33,7 +33,7 @@
                 </li>
                 <li class="divider"></li>
                 <li>
-                  <a href="#"><i class="fa fa-fw fa-power-off"></i> خروج</a>
+                  <button @click="signOut"><i class="fa fa-fw fa-power-off" ></i> خروج</button>
                 </li>
               </ul>
             </li>
@@ -41,22 +41,19 @@
           <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
           <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-              <li>
-                <router-link :to="{name:'Dashboard'}"><i class="fa fa-fw fa-dashboard"></i>داشبورد</router-link>
+              <li v-if="loggedIn">
+                <router-link :to="{name:'dashboard'}"><i class="fa fa-fw fa-dashboard"></i>داشبورد</router-link>
               </li>
-              <li>
+              <li v-if="loggedIn">
                 <a href="javascript:;" data-toggle="collapse" data-target="#users"><i class="fa fa-fw fa-users"></i> کاربران <i class="fa fa-fw fa-caret-down"></i></a>
                 <ul id="users" class="collapse">
-                  <li>
-                    <router-link :to="{name:'Userslist'}">لیست کاربرها</router-link>
-                  </li>
+                  
                   <li>
                     <router-link :to="{name:'SignUp'}">افزودن کاربر</router-link>
-
                   </li>
                 </ul>
               </li>
-              <li>
+              <li v-if="loggedIn">
                 <a href="javascript:;" data-toggle="collapse" data-target="#posts"><i class="fa fa-fw fa-file-text"></i> نوشته ها <i class="fa fa-fw fa-caret-down"></i></a>
                 <ul id="posts" class="collapse">
                   <li>
@@ -68,7 +65,7 @@
                 </ul>
               </li>
 
-              <li>
+              <li v-if="loggedIn">
                 <a href="javascript:;" data-toggle="collapse" data-target="#categories"><i class="fa fa-fw fa-tasks"></i> دسته بندی <i class="fa fa-fw fa-caret-down"></i></a>
                 <ul id="categories" class="collapse">
                   <li>
@@ -108,9 +105,40 @@
 
 <script>
 
-
+  import * as firebase from 'firebase/app';
+  import 'firebase/auth';
 export default {
   name: 'App',
+  data(){
+    return {
+      loggedIn:false,
+      currentUser:false
+    }
+  },
+  methods:{
+    async signOut(){
+         try {
+           const data= firebase.auth().signOut();
+           console.log(data);
+           this.$router.replace('Login')
+         } catch(err){
+            console.log(err)
+          }
+      }
+
+
+  },
+  created() {
+    firebase.auth().onAuthStateChanged(user=>{
+      this.currentUser=firebase.auth().currentUser.email;
+      this.loggedIn=!!user;
+      //if(user){
+      // this.loggedIn=true;
+      // }else{
+      //   this.loggedIn=false;
+      //}
+    })
+  },
 
 }
 </script>

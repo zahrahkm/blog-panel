@@ -47,7 +47,7 @@
             <div class="form-group row">
                 <div class="col-8 offset-4">
                     <p><label class="form-check-label"><input type="checkbox" v-model="users.agree" @blur="$v.users.agree.$touch()"> تمامی <a href="#">قوانین و </a> <a href="#"> شرایط </a></label> را میپذیرم.</p>
-                    <button type="submit" v-if="pageStatus" class="btn btn-primary btn-lg" @click.prevent="addUser" :disabled="$v.$invalid">ثبت نام</button>
+                    <button type="submit" v-if="pageStatus" class="btn btn-primary btn-lg" @click.prevent="register" :disabled="$v.$invalid">ثبت نام</button>
                     <div v-else>
                         <button  id name class="btn btn-success"  :disabled="$v.$invalid" @click.prevent="editUser(userid)">ویرایش</button>
                     </div>
@@ -60,7 +60,9 @@
 </template>
 
 <script>
-    import axios from "axios";
+
+    import * as firebase from 'firebase/app';
+    import 'firebase/auth';
     import notification from "@/Services/Notification/notification";
     import { required,email,minLength } from 'vuelidate/lib/validators'
     export default {
@@ -74,8 +76,9 @@
                     repeatPassword: '',
                     agree:false
                 },
-                userid: this.$route.params.userid,
-                pageStatus:true
+                userId: this.$route.params.userid,
+                pageStatus:true,
+
             }
         },
         validations: {
@@ -98,53 +101,22 @@
         },
 
         methods: {
-            addUser() {
-                axios.post(`https://mypanel-b0573.firebaseio.com/users.json`, this.users)
+            register(){
+                firebase.auth().createUserWithEmailAndPassword(this.users.email,this.users.password)
                     .then(response => {
                         this.$v.$touch();
                         if (!this.$v.$invalid) {
-
                             response.status = notification.success('کاربر با موفقیت ذخیره شد')
+                            this.$router.replace('/Posts')
                         }
-                        this.users = ''
                     })
                     .catch(error => console.log(error.response))
-            },
-
-        getUser() {
-            this.loading=true;
-            axios.get(`https://mypanel-b0573.firebaseio.com/users/${this.userid}.json`)
-                .then(response => {
-                    this.users=(response.data);
-                })
-                .catch((error) => console.log(error.response))
-                .then(()=>{
-                    this.loading=false
-                })
-        },
-        editUser() {
-            this.loading=true;
-            axios.put(`https://mypanel-b0573.firebaseio.com/users/${this.userid}.json`, this.users)
-                .then(response => {
-                    this.$v.$touch();
-                    if (!this.$v.$invalid) {
-                        response.status = notification.success('پست با موفقیت ذخیره شد')
-
-                    }
-                    this.users = ''
-                })
-                .catch(error => console.log(error.response = "پست ذخیره نشد!"))
-                .then(()=>{
-                    this.loading=false
-                })
-        }
+                ;
+            }
         },
         created() {
-            if(this.userid){
-                this.pageStatus = false;
-                this.getUser();
-            }
 
+this.register()
 
         }
 

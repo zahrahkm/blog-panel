@@ -198,6 +198,7 @@ export default {
             this.$v.$touch();
             if (!this.$v.$invalid) {
               response.status = notification.success('پست با موفقیت ذخیره شد')
+              this.$router.replace('/Posts')
               this.addpost = '';
             }
           })
@@ -221,6 +222,7 @@ export default {
             this.$v.$touch();
             if (!this.$v.$invalid) {
               response.status = notification.success('پست با موفقیت ذخیره شد')
+              this.$router.replace('/Posts')
 
             }
             this.addpost = ''
@@ -261,9 +263,7 @@ export default {
     getNow: function() {
       const today = new Date();
       const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      const dateTime=`${date} ${time}`;
-      this.addpost.postDate = dateTime;
+      this.addpost.postDate = date;
     }
 
   },

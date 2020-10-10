@@ -77,7 +77,7 @@
             getUsers() {
                 this.loading=true;
                 axios
-                    .get(`https://mypanel-b0573.firebaseio.com/users.json`)
+                    .get(`https://mypanel-b0573.firebaseio.com/rest/saving-data/users.json?auth=Twu8f2q4zc3jBZnrhtqj7qcxMSV3hil6hffIC6lt`)
                     .then((response) => {
                         return response.data;
                     })

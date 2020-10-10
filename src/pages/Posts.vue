@@ -37,31 +37,7 @@
               </tr>
             </thead>
 
-              <tbody v-for="(post,index) in posts" :key="index" >
-              <tr>
-                <td>{{ index+1 }}</td>
-                <td>{{ post.postTitle }}</td>
-                <td>{{post.postAuthor}}</td>
-
-                <td>95</td>
-                <td>{{post.postDate}}</td>
-                <td>فعال</td>
-                <td>
-                  <div class="op-icon">
-                    <a href>
-                      <router-link :to="{name:'updatepost',params:{postid:post.id}}"><i class="fa fa-edit"></i></router-link>
-                    </a>
-                    <a href>
-                      <i class="fa fa-remove" @click.prevent="deletePost(post)"></i>
-                    </a>
-                    <a href>
-                      <router-link :to="{name:'Post',params:{postid:post.id}}"><i class="fa fa-folder-open"></i></router-link>
-                    </a>
-                  </div>
-                </td>
-              </tr>
-
-              </tbody>
+              <single-post v-for="(post,index) in posts" :key="index" :post="post" :index="index"></single-post>
 
 
 
@@ -78,12 +54,13 @@
 <script>
 import axios from 'axios'
 import notification from "@/Services/Notification/notification";
-import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+import SinglePost from "../components/SinglePost";
 
 
 export default {
   name: "Posts",
-  components:{ PulseLoader},
+  components:{ PulseLoader , SinglePost },
 
   data(){
     return{

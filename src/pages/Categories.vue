@@ -34,26 +34,10 @@
 
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="(category,index) in categories" :key="category.id">
-                <td >{{ index +1 }}</td>
-                <td>{{ category.categoryTitle }}</td>
-                <td>{{ category.categoryUrl }}</td>
-                <td>
-                  <div class="op-icon">
+            <category v-for="(category,index) in categories" :key="category.id" :category="category" :index="index">
 
-                      <router-link :to="{name:'updateCategory',params:{id:category.id }}"><i class="fa fa-edit"></i></router-link>
 
-                    <a href>
-                      <i class="fa fa-remove" @click.prevent="removeCat(category)"></i>
-
-                    </a>
-
-                  </div>
-                </td>
-              </tr>
-
-            </tbody>
+            </category>
           </table>
         </div>
       </div>
@@ -64,8 +48,10 @@
 <script>
 import axios from "axios";
 import notification from "@/Services/Notification/notification";
+import Category from "../components/Category";
 export default {
   name: "Categories",
+    components:{ Category },
   data(){
     return{
       categories:[]
